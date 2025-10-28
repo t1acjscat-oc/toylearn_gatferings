@@ -1,0 +1,508 @@
+{
+  "name": "09_Storage_GoogleDrives_meeting_note",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "회의 녹취록",
+        "formDescription": "필요 정보 입력",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "주관자 이메일",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "참여 인원",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "회의 내용",
+              "fieldType": "textarea",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        -1488,
+        320
+      ],
+      "id": "78d81570-213c-44ee-bb4e-aa0239ff0348",
+      "name": "On form submission",
+      "webhookId": "316aaf6a-6cc3-4f99-99cf-0520ad366e79"
+    },
+    {
+      "parameters": {
+        "operation": "copy",
+        "fileId": {
+          "__rl": true,
+          "value": "1s3chDsL04uASmiRYxb41XY7c3sse_DPm1CysZvqkpVE",
+          "mode": "list",
+          "cachedResultName": "Sample_더 어반 십 x 유어미디어 화상 회의 녹취록의 사본",
+          "cachedResultUrl": "https://docs.google.com/document/d/1s3chDsL04uASmiRYxb41XY7c3sse_DPm1CysZvqkpVE/edit?usp=drivesdk"
+        },
+        "name": "=",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -1104,
+        256
+      ],
+      "id": "a4abf8f8-f1df-415e-8caa-adb0e578685f",
+      "name": "Copy file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "o0BqgSf7knDGCGbB",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Copy file').item.json.id }}",
+          "mode": "id"
+        },
+        "options": {
+          "googleFileConversion": {
+            "conversion": {
+              "docsToFormat": "application/pdf"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -928,
+        512
+      ],
+      "id": "0f9b2a0b-2158-4b32-a99f-aaafefe50752",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "o0BqgSf7knDGCGbB",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "={{ $json['회의 주제'] }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1hC1gig9_u5eIDTz4-wIx5xblMD0t3EGg",
+          "mode": "list",
+          "cachedResultName": "n8n",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1hC1gig9_u5eIDTz4-wIx5xblMD0t3EGg"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -720,
+        512
+      ],
+      "id": "a8ee33d6-5e92-419b-b0f5-c6243d56f3b9",
+      "name": "Upload file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "o0BqgSf7knDGCGbB",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1UMXVlPW04YXojNnZsXGjvpv0Z2F9bV8M1oTPFyIbOp4/edit?usp=sharing",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "시트1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UMXVlPW04YXojNnZsXGjvpv0Z2F9bV8M1oTPFyIbOp4/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "link": "={{ $json.webViewLink }}",
+            "날짜": "={{ $('On form submission').item.json.submittedAt }}"
+          },
+          "matchingColumns": [
+            "날짜"
+          ],
+          "schema": [
+            {
+              "id": "주관자",
+              "displayName": "주관자",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "참여 인원",
+              "displayName": "참여 인원",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "회의 주제",
+              "displayName": "회의 주제",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "날짜",
+              "displayName": "날짜",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "link",
+              "displayName": "link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -544,
+        512
+      ],
+      "id": "7dcd2805-88f7-4b88-a53f-7a64c84d9a6d",
+      "name": "Append or update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "nDpSuiHXpoOxAVm9",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "773d9488-2983-4e07-bcfb-45979b518063",
+              "leftValue": "={{ $json['회의 내용'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1280,
+        320
+      ],
+      "id": "9e34c47a-a87b-4059-9d41-d97f0e9ea0b4",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('On form submission').item.json['주관자 이메일'] }}",
+        "subject": "[공지] 회의 내용 누락 공지",
+        "message": "회의 녹취록의 내용을 보내주시길 바랍니다. ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -1104,
+        624
+      ],
+      "id": "92fe021e-e5a1-4ec6-a15b-a5eccf6c4e37",
+      "name": "Send a message",
+      "webhookId": "abe2fdc3-7574-4d32-b795-f1adcbfc1845",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "a7mzElS5bsHVk22X",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=아래 회의 내용을 보고 회의의 주제를 한 줄로 뽑아줘.\n\n회의 내용 : {{ $('On form submission').item.json['회의 내용'] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        -928,
+        256
+      ],
+      "id": "41c7ac2d-db6b-4db6-94b9-30142bb4732b",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "r04QWAMg8Wbdz8VE",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1UMXVlPW04YXojNnZsXGjvpv0Z2F9bV8M1oTPFyIbOp4",
+          "mode": "list",
+          "cachedResultName": "회의 정리",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UMXVlPW04YXojNnZsXGjvpv0Z2F9bV8M1oTPFyIbOp4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "시트1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1UMXVlPW04YXojNnZsXGjvpv0Z2F9bV8M1oTPFyIbOp4/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "날짜": "={{ $('On form submission').item.json.submittedAt }}",
+            "주관자": "={{ $('On form submission').item.json['주관자 이메일'] }}",
+            "참여 인원": "={{ $('On form submission').item.json['참여 인원'] }}",
+            "회의 주제": "={{ $json.content.parts[0].text }}"
+          },
+          "matchingColumns": [
+            "날짜"
+          ],
+          "schema": [
+            {
+              "id": "주관자",
+              "displayName": "주관자",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "참여 인원",
+              "displayName": "참여 인원",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "회의 주제",
+              "displayName": "회의 주제",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "날짜",
+              "displayName": "날짜",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "link",
+              "displayName": "link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -592,
+        256
+      ],
+      "id": "3cc00fe5-320c-4b97-8c38-13b168c01cb7",
+      "name": "Append or update row in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "nDpSuiHXpoOxAVm9",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Copy file": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Upload file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload file": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Copy file",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet1": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "28da4e3f-8571-4aa6-b891-aa6d5fb74e29",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6fdd077bf595ab4f3f5748d72501527e581b28ba0e6dce4e8a1020a5e5aca3ea"
+  },
+  "id": "hiuDRIGd24zi1fJH",
+  "tags": []
+}
