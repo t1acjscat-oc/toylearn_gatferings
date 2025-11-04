@@ -1,0 +1,516 @@
+{
+  "name": "5_manage_emailboxs",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -992,
+        -320
+      ],
+      "id": "c9edb1f5-6b0f-4688-9b10-c08a1098c57b",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "limit": 10,
+        "filters": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -752,
+        -320
+      ],
+      "id": "08303220-38c2-4236-8b68-2a6e60ad78ec",
+      "name": "Get many messages",
+      "webhookId": "7faee381-f1f3-439c-a659-68c0aca3a1c8",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "a7mzElS5bsHVk22X",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "inputText": "={{ $json.snippet }}",
+        "categories": {
+          "categories": [
+            {
+              "category": "Social",
+              "description": "소셜 미디어, 뉴스레터 마케팅 메일 등 정보성 메시지"
+            },
+            {
+              "category": "Persnal",
+              "description": "개인적인 연락, 친구/가족 관련 메일"
+            },
+            {
+              "category": "Misc",
+              "description": "기타 분류되지 않은 모든 메일"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textClassifier",
+      "typeVersion": 1.1,
+      "position": [
+        -544,
+        -336
+      ],
+      "id": "5eaf17c0-1396-4aca-a629-5bf873697b5e",
+      "name": "Text Classifier"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -624,
+        -128
+      ],
+      "id": "3b5c6f20-4015-42d9-aa28-b52443206164",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "r04QWAMg8Wbdz8VE",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "addLabels",
+        "messageId": "={{ $json.id }}",
+        "labelIds": [
+          "INBOX",
+          "CATEGORY_SOCIAL"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -224,
+        -560
+      ],
+      "id": "2dabc749-57c8-4ff6-94a2-6f6819c16139",
+      "name": "Add label to message",
+      "webhookId": "cfa67917-0131-4075-8b99-9b0f418b9a89",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "a7mzElS5bsHVk22X",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ca07d46a-d52e-4dff-888e-266a2b3ee124",
+              "name": "snippet",
+              "value": "={{ $('Text Classifier').item.json.snippet }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -16,
+        -560
+      ],
+      "id": "e2b2e18f-9bb3-4058-bcc9-bacf27e65a89",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "addLabels",
+        "messageId": "={{ $json.id }}",
+        "labelIds": [
+          "INBOX"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -208,
+        -112
+      ],
+      "id": "5ddbfa1a-7b12-47d1-b774-aad8266aee91",
+      "name": "Add label to message1",
+      "webhookId": "cfa67917-0131-4075-8b99-9b0f418b9a89",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "a7mzElS5bsHVk22X",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "addLabels",
+        "messageId": "={{ $json.id }}",
+        "labelIds": [
+          "CATEGORY_PERSONAL",
+          "INBOX"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -144,
+        -320
+      ],
+      "id": "71b12ae1-b9c9-4397-9a06-e9da38bc108b",
+      "name": "Add label to message2",
+      "webhookId": "cfa67917-0131-4075-8b99-9b0f418b9a89",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "a7mzElS5bsHVk22X",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ca07d46a-d52e-4dff-888e-266a2b3ee124",
+              "name": "snippet",
+              "value": "={{ $('Text Classifier').item.json.snippet }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        64,
+        -320
+      ],
+      "id": "d93fc799-13af-4bdd-955c-4a0b7df40891",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "messageId": "={{ $json.id }}"
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        -112
+      ],
+      "id": "2c52b349-bf3d-498b-9eb0-45e2d595a23b",
+      "name": "Delete a message",
+      "webhookId": "116a25c7-f465-4653-abac-b693a4aecb4d",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "a7mzElS5bsHVk22X",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=하기 내용을 확인하고, 금방 다시 연락드린다는 식으로 간단한 메일 답변을 출력해주세요.\n반드시 메일 내용만 포함해주세요.\n\n[출력 예시]\n안녕하세요, 황지상입니다.\n000님 연락주셔서 감사합니다.(이름이 없을시 해당 내용 삭제)\n-내용-\n감사합니다. \n황지상 드림\n\n01042999300\ngregchris@naver.com\n[메일 내용]\n{{ $json.snippet }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        192,
+        -560
+      ],
+      "id": "bb6433ed-dc91-4b38-ba72-5f1d5c5a3f70",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "r04QWAMg8Wbdz8VE",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=하기 내용을 확인하고, 금방 다시 연락드린다는 식으로 간단한 메일 답변을 출력해주세요. 개인적인 약속을 연락주는 메일이므로 친근한 존댓말을 사용하여 어조를 반영해주세요. \n반드시 메일 내용만 포함해주세요.\n\n[출력 예시]\n안녕하세요, 황지상입니다.\n-내용-\n감사합니다. 연락드리겠습니다\n\n[메일 내용]\n{{ $json.snippet }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        240,
+        -320
+      ],
+      "id": "38b7bf07-1228-4ba4-a353-911343a8bccb",
+      "name": "Message a model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "r04QWAMg8Wbdz8VE",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "reply",
+        "messageId": "={{ $('Add label to message').item.json.id }}",
+        "message": "={{ $json.content.parts[0].text }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        544,
+        -560
+      ],
+      "id": "ce3b5b7e-f855-416e-8dc5-3c4484490331",
+      "name": "Reply to a message",
+      "webhookId": "c1adc14d-9b1e-4f31-8e7c-fe95c88ad13d",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "a7mzElS5bsHVk22X",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "messageId": "={{ $('Add label to message').item.json.id }}"
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        784,
+        -560
+      ],
+      "id": "78d1df66-78a7-4c70-98c9-a17096330ba4",
+      "name": "Delete a message1",
+      "webhookId": "c080735a-66f5-492c-aa73-38d9dcaeac07",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "a7mzElS5bsHVk22X",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "messageId": "={{ $('Add label to message').item.json.id }}"
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        576,
+        -320
+      ],
+      "id": "c0d1a233-e010-4caa-a4ef-a2be48b116ef",
+      "name": "Delete a message2",
+      "webhookId": "c080735a-66f5-492c-aa73-38d9dcaeac07",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "a7mzElS5bsHVk22X",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get many messages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many messages": {
+      "main": [
+        [
+          {
+            "node": "Text Classifier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Text Classifier",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text Classifier": {
+      "main": [
+        [
+          {
+            "node": "Add label to message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Add label to message2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Add label to message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add label to message": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add label to message1": {
+      "main": [
+        [
+          {
+            "node": "Delete a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add label to message2": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Reply to a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model1": {
+      "main": [
+        [
+          {
+            "node": "Delete a message2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reply to a message": {
+      "main": [
+        [
+          {
+            "node": "Delete a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Message a model1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "ec8f5a3c-51cc-4201-bf1a-03111950c70f",
+  "meta": {
+    "instanceId": "6fdd077bf595ab4f3f5748d72501527e581b28ba0e6dce4e8a1020a5e5aca3ea"
+  },
+  "id": "73oD6UgnGcZpYFgm",
+  "tags": []
+}
