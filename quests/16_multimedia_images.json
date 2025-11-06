@@ -1,0 +1,182 @@
+{
+  "name": "16_multimedia_images",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "사진 변환기",
+        "formDescription": "프롬포트를 입력하여 첨부한 이미지를 변환합니다. ",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "prompt"
+            },
+            {
+              "fieldLabel": "input_image",
+              "fieldType": "file",
+              "multipleFiles": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        -288,
+        336
+      ],
+      "id": "601bb1e0-e2e0-4b64-b0eb-e896fc6c04f4",
+      "name": "On form submission",
+      "webhookId": "e9a96a6e-0a6b-48fa-b44c-ac61eea1289e"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-goog-api-key",
+              "value": "AIzaSyCYsGuL6AD2ceEvoAAPfB7iqntH1Htd-Mk"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"contents\": [\n    {\n      \"parts\": [\n        {\n          \"text\": \"{{ $('On form submission').item.json.prompt }}\"\n        },\n        {\n          \"inline_data\": {\n            \"mime_type\": \"image/jpeg\",\n            \"data\": \"{{ $json.data }}\"\n          }\n        }\n      ]\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        144,
+        336
+      ],
+      "id": "d40af084-f907-4413-a405-89c493842e54",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "candidates[0].content.parts[1].inlineData.data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        368,
+        336
+      ],
+      "id": "174a4b2f-16b2-474c-b98c-b795a65547c6",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "operation": "binaryToPropery",
+        "binaryPropertyName": "input_image",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        336
+      ],
+      "id": "2e8bd3e0-82c8-43e1-913b-38d61714159f",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "name": "output_image",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "16o6-biYPH7ovFINthxzoua87ntNFf6FO",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        576,
+        336
+      ],
+      "id": "14fb3e10-6362-4ed6-a1a6-5b62e06ae935",
+      "name": "Upload file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "MUUW9QNW7b4qC6nD",
+          "name": "Google Drive account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Upload file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "00ffdb6e-a5c3-492f-8047-659a5137126c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "05f68f66432a33f340d26bf42e0fbc0c95f451e4e55de2a5e58ab158f2e86b4e"
+  },
+  "id": "tHvQ7h3qq3QP4F6M",
+  "tags": []
+}
