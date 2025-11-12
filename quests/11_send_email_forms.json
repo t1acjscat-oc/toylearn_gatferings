@@ -1,0 +1,143 @@
+{
+  "name": "11_send_email_forms",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "cfc47924-984a-4a94-ada8-89171ef146b3",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "9aa68867-1652-4028-888b-e37c8d64291b",
+      "name": "Webhook",
+      "webhookId": "cfc47924-984a-4a94-ada8-89171ef146b3"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json['[\\'option gmail\\']'] }}",
+        "subject": "정보값 전달 드립니다.",
+        "emailType": "text",
+        "message": "={{ $('Webhook').item.json.query.fname }} , {{ $('Webhook').item.json.query.lname }} , {{ $('Webhook').item.json.query.Gender }} , {{ $('Webhook').item.json.query.content }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        688,
+        0
+      ],
+      "id": "0ed3405e-8717-44fe-bf04-f5718f6e7892",
+      "name": "Send a message",
+      "webhookId": "fbc69858-e0c6-4c96-b7bb-aa104a3aa9e7",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "VvsUxeMyZ012H3YU",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1Jg7Xi_w0CCGFpF5hD8PI5RPaUcDk2xkmwndK0V0zEsw/edit?usp=sharing",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "시트1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Jg7Xi_w0CCGFpF5hD8PI5RPaUcDk2xkmwndK0V0zEsw/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        224,
+        0
+      ],
+      "id": "08a1e666-b02b-47bf-af82-3d5d2f605563",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "DFYTBFcNMBAriCcg",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "['option gmail']",
+        "include": "allOtherFields",
+        "options": {
+          "includeBinary": true
+        }
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        480,
+        0
+      ],
+      "id": "75dab48b-0e8b-428b-b6a5-8a9a55febd01",
+      "name": "Split Out"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "executionTimeout": -1,
+    "availableInMCP": false,
+    "timeSavedPerExecution": 1
+  },
+  "versionId": "2d2d15d4-7b3f-4552-a8bf-68c08ab4d0d2",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "130b104e8ec6e2bfaca35c0ab204e53c879a3a7b18f44f6d4abd8ead7049ff87"
+  },
+  "id": "8bfFLLdpnYKtC7jb",
+  "tags": []
+}
